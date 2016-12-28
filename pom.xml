@@ -4,8 +4,66 @@
 	<groupId>de.tfelix</groupId>
 	<artifactId>namegen</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
+	<packaging>jar</packaging>
 	<name>namegen</name>
 	<description>A simple namegenerator based on some kind of bayes network probability distribution.</description>
+
+	<scm>
+		<connection>scm:git:git://github.com/tfelix/namegen</connection>
+		<developerConnection>scm:git:git@github.com/tfelix/namegen</developerConnection>
+		<url>https://github.com/tfelix/namegen</url>
+	</scm>
+
+	<licenses>
+		<license>
+			<name>MIT License</name>
+			<url>https://github.com/tfelix/namegen/blob/master/LICENSE</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<distributionManagement>
+		<repository>
+			<id>bintray-tfelix-namegen</id>
+			<name>tfelix-namegen</name>
+			<url>https://api.bintray.com/maven/tfelix/namegen/namegen/;publish=1</url>
+		</repository>
+	</distributionManagement>
+
+	<profiles>
+		<profile>
+			<id>release</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-source-plugin</artifactId>
+						<version>3.0.1</version>
+						<executions>
+							<execution>
+								<id>attach-sources</id>
+								<goals>
+									<goal>jar-no-fork</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-jar-plugin</artifactId>
+					<version>3.0.2</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
 
 	<dependencies>
 		<!-- https://mvnrepository.com/artifact/junit/junit -->
@@ -28,4 +86,5 @@
 			<version>1.7.22</version>
 		</dependency>
 	</dependencies>
+	<url>https://github.com/tfelix/namegen</url>
 </project>
