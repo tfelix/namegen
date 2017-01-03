@@ -1,5 +1,6 @@
 package de.tfelix.namegen.model;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -11,15 +12,16 @@ import java.util.Map.Entry;
  * @author Thomas Felix
  *
  */
-class Categorical {
+class Categorical implements Serializable {
 
+	private static final long serialVersionUID = 1L;
 	private Map<Character, Integer> tokens = new HashMap<>();
 	private int totalCount;
 	private final float prior;
 
 	public Categorical(float prior) {
 		if(prior < 0) {
-			throw new IllegalArgumentException("Prior must be bigger then 0.");
+			throw new IllegalArgumentException("Prior must be bigger or equal then 0.");
 		}
 		
 		this.prior = prior;

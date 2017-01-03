@@ -12,8 +12,9 @@ import de.tfelix.namegen.model.MarkovModel;
 import de.tfelix.namegen.model.Model;
 
 /**
- * Use this class to initialize a serialized file which can be loaded by the
- * name generator.
+ * Use this class to train a model based on a simple textfile containing a list
+ * of newline terminated names. It will initialize a serialized file which can
+ * be loaded by the name generator later and used to generate the names.
  * <p>
  * The file to be analyzed must contain a newline terminated list of names.
  * </p>
@@ -40,6 +41,20 @@ public class NameGenGenerator {
 	 */
 	private final float katzBackoff;
 
+	/**
+	 * Ctor.
+	 * 
+	 * @param maxOrder
+	 *            Maximum order of the markov model. 3 is a good default value.
+	 * @param prior
+	 *            The higher the prior value is, the more random the model will
+	 *            be. Must be higher if there is not enough training data.
+	 *            Usually a value between 0.01 and 0.05 is a good start.
+	 * @param katzBackoff
+	 *            If the probability for choosing a new terminal for the name is
+	 *            under this threshold we will fall back to the lower order
+	 *            model of the markov chain. 0.05 is a reasonable default value.
+	 */
 	public NameGenGenerator(int maxOrder, float prior, float katzBackoff) {
 		if (maxOrder < 1 || maxOrder > 10) {
 			throw new IllegalArgumentException("Order must be between 1 and 10.");
@@ -59,15 +74,47 @@ public class NameGenGenerator {
 		this.model = new MarkovModel(maxOrder, prior);
 	}
 
-	public void analyze(String inFile, String outFile) {
+	/**
+	 * Reads the file and feeds it into the model. The file must contain newline
+	 * terminated names.
+	 * 
+	 * @param inFile
+	 *            The file to be read.
+	 */
+	public void analyze(String inFile) {
 
+		final long startTime = System.currentTimeMillis();
 		final File inF = new File(inFile);
-		final File outF = new File(outFile);
 
 		// Validate the input files.
 		if (!inF.exists() || !inF.canRead()) {
 			throw new IllegalArgumentException("Can not find or read input file.");
 		}
+
+		try {
+			try (BufferedReader br = new BufferedReader(new FileReader(inFile))) {
+				String line = "";
+				while ((line = br.readLine()) != null) {
+					line = line.trim().toLowerCase();
+					// Generate our hash counts.
+					model.update(line);
+				}
+			}
+		} catch (IOException e) {
+			LOG.error("Could not open inFile", e);
+		}
+
+		LOG.info("File {} analyzed in {} ms.", inF.getName(), System.currentTimeMillis() - startTime);
+	}
+
+	/**
+	 * Writes the model serialized to a file to load it later.
+	 * 
+	 * @param outFile
+	 *            The file to write.
+	 */
+	public void writeModel(String outFile) {
+		final File outF = new File(outFile);
 
 		// Try to create out file.
 		if (!outF.exists()) {
@@ -75,33 +122,6 @@ public class NameGenGenerator {
 				outF.createNewFile();
 			} catch (IOException e) {
 				throw new IllegalArgumentException("Can not create outFile.", e);
-			}
-		}
-
-		try {
-			scanFileContent(inFile);
-		} catch (IOException e) {
-			LOG.error("Could not open inFile", e);
-		}
-		
-		// Write the model to the outfile.
-	}
-
-	/**
-	 * Scans the file content to create the n-grams and their probability
-	 * distribution.
-	 * 
-	 * @param inFile
-	 *            The file to scan.
-	 */
-	private void scanFileContent(String inFile) throws IOException {
-
-		try (BufferedReader br = new BufferedReader(new FileReader(inFile))) {
-			String line = "";
-			while ((line = br.readLine()) != null) {
-				line = line.trim().toLowerCase();
-				// Generate our hash counts.
-				model.update(line);
 			}
 		}
 	}
