@@ -2,8 +2,10 @@ package de.tfelix.namegen;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,21 +30,12 @@ public class NameGenGenerator {
 
 	private final Model model;
 
-	/**
-	 * This value is added to each probability in order to smooth out the
-	 * distribution and make less likly symbols occure more often which might be
-	 * the case for small training samples.
-	 */
-	private final float prior;
-
-	/**
-	 * If we undercut this probability for the next token we will backoff to the
-	 * next lower order.
-	 */
-	private final float katzBackoff;
 
 	/**
 	 * Ctor.
+	 * The prior value is added to each probability in order to smooth out the
+	 * distribution and make less likly symbols occure more often which might be
+	 * the case for small training samples.
 	 * 
 	 * @param maxOrder
 	 *            Maximum order of the markov model. 3 is a good default value.
@@ -68,9 +61,6 @@ public class NameGenGenerator {
 			throw new IllegalArgumentException("KatzBackoff must be bigger then 0.");
 		}
 
-		this.prior = prior;
-		this.katzBackoff = katzBackoff;
-
 		this.model = new MarkovModel(maxOrder, prior);
 	}
 
@@ -82,6 +72,9 @@ public class NameGenGenerator {
 	 *            The file to be read.
 	 */
 	public void analyze(String inFile) {
+		if(inFile == null || inFile.isEmpty()) {
+			throw new IllegalArgumentException("inFile can not be null or empty.");
+		}
 
 		final long startTime = System.currentTimeMillis();
 		final File inF = new File(inFile);
@@ -114,6 +107,10 @@ public class NameGenGenerator {
 	 *            The file to write.
 	 */
 	public void writeModel(String outFile) {
+		if(outFile == null || outFile.isEmpty()) {
+			throw new IllegalArgumentException("inFile can not be null or empty.");
+		}
+		
 		final File outF = new File(outFile);
 
 		// Try to create out file.
@@ -124,6 +121,13 @@ public class NameGenGenerator {
 				throw new IllegalArgumentException("Can not create outFile.", e);
 			}
 		}
+		
+		try(ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(outF))) {
+			oos.writeObject(model);
+		} catch(IOException ex) {
+			LOG.error("Could not write model.", ex);
+		}
+		
 	}
 
 }

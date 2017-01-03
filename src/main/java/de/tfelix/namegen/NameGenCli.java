@@ -29,6 +29,15 @@ public class NameGenCli {
 			final CommandLineParser cmdParser = new DefaultParser();
 			final CommandLine line = cmdParser.parse(options, args);
 			
+			// Find input and output file.
+			final String outFile = line.getOptionValue("o");
+			final String inFile = line.getOptionValue("i");
+			
+			final NameGenGenerator gen = new NameGenGenerator(3, 0.001f, 0.02f);
+			gen.analyze(inFile);
+			gen.writeModel(outFile);
+			LOG.info("Model was written.");
+			
 		} catch (ParseException ex) {
 			LOG.error("Error while parsing parameter.", ex);
 		}
@@ -37,8 +46,9 @@ public class NameGenCli {
 	private static Options setupCli() {
 		final Options opts = new Options();
 
-		Option opt = Option.builder()
-				.argName("o")
+		Option opt = Option.builder("o")
+				.argName("outFile")
+				.longOpt("out")
 				.hasArg()
 				.required()
 				.desc("Gives the path of the output file.")
@@ -46,8 +56,9 @@ public class NameGenCli {
 
 		opts.addOption(opt);
 
-		opt = Option.builder()
-				.argName("i")
+		opt = Option.builder("i")
+				.argName("inFile")
+				.longOpt("in")
 				.hasArg()
 				.required()
 				.desc("Gives the path to the input file of the names to be learned.")

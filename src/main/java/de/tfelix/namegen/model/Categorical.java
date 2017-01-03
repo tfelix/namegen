@@ -55,7 +55,7 @@ class Categorical implements Serializable {
 			throw new IllegalArgumentException("Prob must be between 0 and 1.0");
 		}
 
-		float sample = prob * totalCount;
+		float sample = prior + (prob * totalCount);
 		for (Entry<Character, Integer> e : tokens.entrySet()) {
 			sample -= e.getValue();
 			if (sample <= 0) {

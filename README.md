@@ -21,11 +21,12 @@ An example file is given inside src/test/resources/morrow\_names.txt which holds
 
 One can use the API to generate the models programatically, please see the docs of NameGenGenerator.java or one can use the commandline with the executable jar of this repository.
 
-java -jar namegen.jar /path/to/infile /path/to/outfile [-o=3 -p=0.001]
+```
+java -jar namegen.jar -i /path/to/infile -o /path/to/outfile
+```
 
-The -o gives the order of the markov model, the default of 3 is quite okay.
+Currently the katzbackoff probability as well as the prior are set to fixed default values.
 
--p gives the prior probability and should be higher the fewer the training data is. For 50+ names used for training a value of 0.001 is okay and the default.
 
 ## Requirements and Dependencies
 
