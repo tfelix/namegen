@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.tfelix</groupId>
 	<artifactId>namegen</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>namegen</name>
 	<description>A simple namegenerator based on some kind of bayes network probability distribution.</description>
