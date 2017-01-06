@@ -1,9 +1,8 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.tfelix</groupId>
 	<artifactId>namegen</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>1.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>namegen</name>
 	<description>A simple namegenerator based on some kind of bayes network probability distribution.</description>
@@ -13,9 +12,10 @@
 	</properties>
 
 	<scm>
-		<connection>scm:git:git://github.com/tfelix/namegen</connection>
-		<developerConnection>scm:git:git@github.com/tfelix/namegen</developerConnection>
+		<connection>scm:git:https://github.com/tfelix/namegen.git</connection>
+		<developerConnection>scm:git:https://github.com/tfelix/namegen.git</developerConnection>
 		<url>https://github.com/tfelix/namegen</url>
+		<tag>v1.0.0</tag>
 	</scm>
 
 	<licenses>
@@ -36,24 +36,27 @@
 
 	<profiles>
 		<profile>
-			<id>release</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-source-plugin</artifactId>
-						<version>3.0.1</version>
-						<executions>
-							<execution>
-								<id>attach-sources</id>
-								<goals>
-									<goal>jar-no-fork</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
+			<repositories>
+				<repository>
+					<snapshots>
+						<enabled>false</enabled>
+					</snapshots>
+					<id>bintray-tfelix-namegen</id>
+					<name>bintray</name>
+					<url>http://dl.bintray.com/tfelix/namegen</url>
+				</repository>
+			</repositories>
+			<pluginRepositories>
+				<pluginRepository>
+					<snapshots>
+						<enabled>false</enabled>
+					</snapshots>
+					<id>bintray-tfelix-namegen</id>
+					<name>bintray-plugins</name>
+					<url>http://dl.bintray.com/tfelix/namegen</url>
+				</pluginRepository>
+			</pluginRepositories>
+			<id>bintray</id>
 		</profile>
 	</profiles>
 
@@ -76,8 +79,7 @@
 				<configuration>
 					<transformers>
 						<!-- add Main-Class to manifest file -->
-						<transformer
-							implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+						<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
 							<mainClass>de.tfelix.namegen.NameGenCli</mainClass>
 						</transformer>
 					</transformers>
@@ -124,4 +126,8 @@
 
 	</dependencies>
 	<url>https://github.com/tfelix/namegen</url>
+	<issueManagement>
+		<system>GitHub Issues</system>
+		<url>https://github.com/tfelix/namegen/issues</url>
+	</issueManagement>
 </project>

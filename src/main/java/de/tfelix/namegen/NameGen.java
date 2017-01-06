@@ -34,6 +34,9 @@ public class NameGen {
 	 *            Path to a name file resource.
 	 */
 	public NameGen(String nameFile) {
+		if(nameFile == null || nameFile.isEmpty()) {
+			throw new IllegalArgumentException("nameFile can not be null or empty.");
+		}
 
 		// We must load the model from file.
 		final File file = new File(nameFile);
