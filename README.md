@@ -25,7 +25,7 @@ One can use the API to generate the models programatically, please see the docs 
 java -jar namegen.jar -i /path/to/infile -o /path/to/outfile
 ```
 
-Currently the katzbackoff probability as well as the prior are set to fixed default values.
+Currently the katzbackoff probability as well as the priorProbability are set to fixed default values.
 
 
 ## Requirements and Dependencies

@@ -5,6 +5,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Paths;
 
+import com.ibm.icu.util.ULocale;
 import org.junit.Test;
 
 public class NameGenGeneratorTest {
@@ -44,6 +45,6 @@ public class NameGenGeneratorTest {
 
 	private NameGenGenerator getGen() {
 		
-		return new NameGenGenerator(3, 0.01f, 0.03f);
+		return new NameGenGenerator(3, 0.01f, 0.03f, ULocale.ENGLISH);
 	}
 }

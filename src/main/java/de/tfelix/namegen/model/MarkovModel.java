@@ -1,5 +1,7 @@
 package de.tfelix.namegen.model;
 
+import com.ibm.icu.util.ULocale;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -19,10 +21,12 @@ public class MarkovModel implements Model {
 	private final float prior;
 	private final String prefix;
 	private final char postfix;
-	private final Map<String, Categorical> counts = new HashMap<>();
+	private final Transition delimiterTransition;
+	private final ULocale locale;
+	private final Map<String, Transition> transitions = new HashMap<>();
 
 	/**
-	 * Creates a new markov model. The order is how many characters are taken
+	 * Creates a new Markov model. The order is how many characters are taken
 	 * into account for creating depending probabilities. It should be between 1
 	 * and 10 (inclusive). The prior value can be used to make the model not so
 	 * depending on the learning data but gets more random. Usually the values
@@ -30,11 +34,16 @@ public class MarkovModel implements Model {
 	 * more learning data.
 	 * 
 	 * @param order
-	 *            Order of the markov model.
+	 *            Order of the Markov model.
 	 * @param prior
-	 *            The prior value for smoothing the contained data.
+	 *            The starting probability assigned to each alphabet character, that it will be output. Note that this
+     *            probability will be meaningless if it's more than the inverse of the size of the alphabet, as it would
+     *            dictate that every alphabet character is equally likely to be output, with no adjustment room left for
+     *            the observations.
+     * @param locale
+     *            The locale to use for generating letters that were not seen in the training set.
 	 */
-	public MarkovModel(int order, float prior) {
+	public MarkovModel(int order, float prior, ULocale locale) {
 		if (order < 1 || order > 10) {
 			throw new IllegalArgumentException("Order must be between 1 and 10.");
 		}
@@ -47,13 +56,20 @@ public class MarkovModel implements Model {
 
 		this.prefix = SymbolManager.getStartSymbol(order);
 		this.postfix = SymbolManager.getEndSymbol();
+		Transition transition = new Transition(0f, locale);
+		transition.update(this.postfix);
+		this.delimiterTransition = transition.build();
+		this.locale = locale;
 	}
 
-	private Categorical getCategorical(String context) {
-		if (!counts.containsKey(context)) {
-			counts.put(context, new Categorical(prior));
+	private Transition getTransition(String context) {
+		/**
+		 * Get a Transition for this context
+		 */
+		if (!transitions.containsKey(context)) {
+			return delimiterTransition;
 		}
-		return counts.get(context);
+		return transitions.get(context);
 	}
 
 	/*
@@ -66,18 +82,32 @@ public class MarkovModel implements Model {
 		line = prefix + line + postfix;
 		for (int i = order; i < line.length(); i++) {
 			String context = line.substring(i - order, i);
-			char event = line.charAt(i);
+			char output = line.charAt(i);  // line[i] should be typically output in this context
 			for (int j = 0; j < context.length(); j++) {
-				String subCtx = context.substring(j);
-				Categorical cat = getCategorical(subCtx);
-				cat.update(event);
+				String subContext = context.substring(j);
+				if(this.transitions.containsKey(subContext)) {
+				    transitions.get(subContext).update(output);
+                } else {
+				    Transition transition = new Transition(this.prior, locale);
+				    transition.update(output);
+				    transitions.put(subContext, transition);
+                }
 			}
 		}
 	}
 
+	@Override
+    public Model build() {
+	    MarkovModel runtimeModel = new MarkovModel(this.order, this.prior, this.locale);
+	    for(String key: transitions.keySet()) {
+	        runtimeModel.transitions.put(key, transitions.get(key).build());
+        }
+        return runtimeModel;
+    }
+
 	/**
 	 * The leading text is transformed so it is usable. It gets appended or
-	 * shortened so that an categorical exists.
+	 * shortened so that a categorical exists.
 	 * 
 	 * @param context
 	 *            The context string.
@@ -93,7 +123,7 @@ public class MarkovModel implements Model {
 		}
 
 		// Remove length until we find a categorical.
-		while (!counts.containsKey(context) && context.length() > 0) {
+		while (!transitions.containsKey(context) && context.length() > 0) {
 			context = context.substring(1);
 		}
 
@@ -110,10 +140,10 @@ public class MarkovModel implements Model {
 	 *            Random number between 0 and 1.
 	 * @return A new char.
 	 */
-	private char sample(String context, float rand) {
+	private char sample(String context, float rand) throws RuntimeException {
 		// Check if we need to backoff the context.
 		context = backoff(context);
-		return getCategorical(context).pick(rand);
+		return getTransition(context).pick(rand);
 	}
 
 	/*

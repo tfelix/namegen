@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 
+import com.ibm.icu.util.ULocale;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,8 +48,11 @@ public class NameGenGenerator {
 	 *            If the probability for choosing a new terminal for the name is
 	 *            under this threshold we will fall back to the lower order
 	 *            model of the markov chain. 0.05 is a reasonable default value.
+     * @param locale
+     *            The locale to use for generating letters that were not seen in
+     *            the training set.
 	 */
-	public NameGenGenerator(int maxOrder, float prior, float katzBackoff) {
+	public NameGenGenerator(int maxOrder, float prior, float katzBackoff, ULocale locale) {
 		if (maxOrder < 1 || maxOrder > 10) {
 			throw new IllegalArgumentException("Order must be between 1 and 10.");
 		}
@@ -61,7 +65,7 @@ public class NameGenGenerator {
 			throw new IllegalArgumentException("KatzBackoff must be bigger then 0.");
 		}
 
-		this.model = new MarkovModel(maxOrder, prior);
+		this.model = new MarkovModel(maxOrder, prior, locale);
 	}
 
 	/**
@@ -105,6 +109,7 @@ public class NameGenGenerator {
 	 * 
 	 * @param outFile
 	 *            The file to write.
+	 *            todo: write as text instead of a binary blob.
 	 */
 	public void writeModel(String outFile) {
 		if(outFile == null || outFile.isEmpty()) {
@@ -121,9 +126,9 @@ public class NameGenGenerator {
 				throw new IllegalArgumentException("Can not create outFile.", e);
 			}
 		}
-		
+		Model runtimeModel = this.model.build();
 		try(ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(outF))) {
-			oos.writeObject(model);
+			oos.writeObject(runtimeModel);
 		} catch(IOException ex) {
 			LOG.error("Could not write model.", ex);
 		}

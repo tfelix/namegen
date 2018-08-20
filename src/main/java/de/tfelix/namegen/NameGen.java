@@ -60,7 +60,7 @@ public class NameGen {
 	 * 
 	 * @return A new random name.
 	 */
-	public String getName() {
+	public String getName() throws RuntimeException {
 		return model.generate(rand);
 	}
 }
