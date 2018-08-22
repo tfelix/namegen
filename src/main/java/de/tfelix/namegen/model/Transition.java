@@ -1,5 +1,7 @@
 package de.tfelix.namegen.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ibm.icu.text.UnicodeSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +50,14 @@ class Transition implements Serializable {
 		this.locale = alphabetLocale;
 		this.priorProbability = priorProbability;
 		this.observedChars = new HashMap<>();
+	}
+
+	@JsonCreator
+	public Transition(@JsonProperty("distribution")Map<Character, Float> distribution) {
+		// todo: separate interface for runtime transition
+		this.distribution = distribution;
+		this.locale = null;
+		this.observedChars = null;
 	}
 
 	/**

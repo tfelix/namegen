@@ -10,7 +10,7 @@ import java.util.Random;
  * @author Thomas Felix
  *
  */
-public interface Model extends Serializable {
+public interface TrainableModel extends Serializable {
 
 	/**
 	 * Updates the model with new information which is contained in the given
@@ -22,20 +22,10 @@ public interface Model extends Serializable {
 	void update(String line);
 
     /**
-     * Returns a modified Model instance that has been optimized for runtime rather than training. This should be called
+     * Returns a modified TrainableModel instance that has been optimized for runtime rather than training. This should be called
      * before any subsequent calls to generate().
      * @return
      */
-	Model build();
-
-	/**
-	 * Generate a random name from the model which was previously generated.
-	 * 
-	 * @param rand
-	 *            A instance of a random number generator.
-	 * @return A generated name from the model.
-     * @throws RuntimeException if the model hasn't yet been built
-	 */
-	String generate(Random rand) throws RuntimeException;
+	RuntimeModel build();
 
 }

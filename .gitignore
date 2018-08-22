@@ -8,3 +8,4 @@ pom.xml.releaseBackup
 *.iml
 *.txt
 *.dat
+*.csv

@@ -2,21 +2,25 @@ package de.tfelix.namegen;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import com.ibm.icu.util.ULocale;
+import de.tfelix.namegen.model.MarkovModel;
+import de.tfelix.namegen.model.RuntimeModel;
+import de.tfelix.namegen.model.TrainableModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.tfelix.namegen.model.MarkovModel;
-import de.tfelix.namegen.model.Model;
-
 /**
- * Use this class to train a model based on a simple textfile containing a list
- * of newline terminated names. It will initialize a serialized file which can
+ * Use this class to train a model based on a simple text file containing a list
+ * of new-line-terminated names. It will initialize a serialized file which can
  * be loaded by the name generator later and used to generate the names.
  * <p>
  * The file to be analyzed must contain a newline terminated list of names.
@@ -29,25 +33,25 @@ public class NameGenGenerator {
 
 	private final static Logger LOG = LoggerFactory.getLogger(NameGenGenerator.class);
 
-	private final Model model;
+	private final TrainableModel trainableModel;
 
 
 	/**
 	 * Ctor.
 	 * The prior value is added to each probability in order to smooth out the
-	 * distribution and make less likly symbols occure more often which might be
+	 * distribution and make less likely symbols occur more often which might be
 	 * the case for small training samples.
 	 * 
 	 * @param maxOrder
-	 *            Maximum order of the markov model. 3 is a good default value.
+	 *            Maximum order of the Markov model. 3 is a good default value.
 	 * @param prior
-	 *            The higher the prior value is, the more random the model will
+	 *            The higher the prior value is, the more random the trainableModel will
 	 *            be. Must be higher if there is not enough training data.
 	 *            Usually a value between 0.01 and 0.05 is a good start.
 	 * @param katzBackoff
 	 *            If the probability for choosing a new terminal for the name is
 	 *            under this threshold we will fall back to the lower order
-	 *            model of the markov chain. 0.05 is a reasonable default value.
+	 *            trainableModel of the markov chain. 0.05 is a reasonable default value.
      * @param locale
      *            The locale to use for generating letters that were not seen in
      *            the training set.
@@ -65,11 +69,11 @@ public class NameGenGenerator {
 			throw new IllegalArgumentException("KatzBackoff must be bigger then 0.");
 		}
 
-		this.model = new MarkovModel(maxOrder, prior, locale);
+		this.trainableModel = new MarkovModel(maxOrder, prior, locale);
 	}
 
 	/**
-	 * Reads the file and feeds it into the model. The file must contain newline
+	 * Reads the file and feeds it into the trainableModel. The file must contain newline
 	 * terminated names.
 	 * 
 	 * @param inFile
@@ -94,7 +98,7 @@ public class NameGenGenerator {
 				while ((line = br.readLine()) != null) {
 					line = line.trim().toLowerCase();
 					// Generate our hash counts.
-					model.update(line);
+					trainableModel.update(line);
 				}
 			}
 		} catch (IOException e) {
@@ -105,7 +109,7 @@ public class NameGenGenerator {
 	}
 
 	/**
-	 * Writes the model serialized to a file to load it later.
+	 * Writes the trainableModel serialized to a file to load it later.
 	 * 
 	 * @param outFile
 	 *            The file to write.
@@ -126,13 +130,20 @@ public class NameGenGenerator {
 				throw new IllegalArgumentException("Can not create outFile.", e);
 			}
 		}
-		Model runtimeModel = this.model.build();
-		try(ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(outF))) {
-			oos.writeObject(runtimeModel);
-		} catch(IOException ex) {
-			LOG.error("Could not write model.", ex);
-		}
-		
+		RuntimeModel generator = this.trainableModel.build();
+        ObjectMapper objectMapper = new ObjectMapper()
+                .registerModule(new ParameterNamesModule())
+                .registerModule(new Jdk8Module());
+        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+        try {
+            objectMapper.writeValue(outF, generator);
+		} catch(JsonMappingException me) {
+			LOG.error(me.getLocalizedMessage());
+		} catch (JsonGenerationException ge) {
+            LOG.error(ge.getLocalizedMessage());
+        } catch (IOException ioe) {
+            LOG.error("Could not write to {}", outFile);
+        }
 	}
 
 }

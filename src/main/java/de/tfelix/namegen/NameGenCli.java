@@ -59,7 +59,7 @@ public class NameGenCli {
 				final NameGenGenerator gen = new NameGenGenerator(order, prior, 0.02f, icuLocale);
 				gen.analyze(inFile);
 				gen.writeModel(outFile);
-				LOG.info("Model was written.");
+				LOG.info("Trainable model was written.");
 			} else if (mode.equalsIgnoreCase("generate")) {
 				final NameGen gen = new NameGen(inFile);
 				Set<String> generatedNames = new HashSet<>(count);

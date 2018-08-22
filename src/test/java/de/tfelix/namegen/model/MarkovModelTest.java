@@ -6,12 +6,10 @@ import java.util.concurrent.ThreadLocalRandom;
 import com.ibm.icu.text.UnicodeSet;
 import com.ibm.icu.util.LocaleData;
 import com.ibm.icu.util.ULocale;
-import com.sun.org.apache.xpath.internal.operations.Mod;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.awt.windows.ThemeReader;
 
 import static org.junit.Assert.fail;
 
@@ -35,12 +33,12 @@ public class MarkovModelTest {
 	 */
 	@Test
 	public void deterministic_model_should_repeat_training() {
-		//Model model = new MarkovModel(3, 0.001f);
-		Model model = new MarkovModel(3, 0f, ULocale.GERMAN);
+		//TrainableModel trainableModel = new MarkovModel(3, 0.001f);
+		TrainableModel trainableModel = new MarkovModel(3, 0f, ULocale.GERMAN);
 		String name = "thomas";
-		model.update(name);
-		Model builtModel = model.build();
-		String n = builtModel.generate(rand);
+		trainableModel.update(name);
+		RuntimeModel generator = trainableModel.build();
+		String n = generator.apply(rand);
 		Assert.assertEquals(name, n);
 	}
 
@@ -48,17 +46,17 @@ public class MarkovModelTest {
     public void should_generate_new_names() {
         UnicodeSet alphabet = com.ibm.icu.util.LocaleData.getExemplarSet(ULocale.FRENCH, LocaleData.ES_STANDARD);
 	    float prior = 0.5f / alphabet.size();  // ~½ of characters should be thanks to the observations
-        Model model = new MarkovModel(3, prior, ULocale.FRENCH);
+        TrainableModel trainableModel = new MarkovModel(3, prior, ULocale.FRENCH);
         String name = "thomas";
-        model.update(name);
-        Model builtModel = model.build();
-        String result1 = builtModel.generate(rand);
+        trainableModel.update(name);
+        RuntimeModel generator = trainableModel.build();
+        String result1 = generator.apply(rand);
         if(result1.equals(name)) {
             logger.warn("The generated name is the same as the training name! This is very unlikely and is probably " +
                     "an error.");
         }
         rand = ThreadLocalRandom.current();
-        String result2 = builtModel.generate(rand);
+        String result2 = generator.apply(rand);
         if(result1.equals(result2) && result1.equals(name)) {
             fail("It is too unlikely that two random results would both be exactly the same as the training data.");
         }

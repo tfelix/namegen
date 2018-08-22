@@ -38,10 +38,12 @@ public class NameGenTest {
 		String modelFile = Paths.get(url.toURI()).toString();
 		trainer.writeModel(modelFile);
 		
-		NameGen gen = new NameGen(modelFile);
+		NameGen gen = new NameGen(trainedData);
 		String name = gen.getName();
 		Assert.assertNotNull(name);
 		Assert.assertTrue(name.length() > 0);
 		logger.info("Successfully generated {}, reminiscent of the names in {}.", name, training_input);
+
+		// todo: mock a pseudorandom generator and assert that the loaded model is the same as the original model
 	}
 }
