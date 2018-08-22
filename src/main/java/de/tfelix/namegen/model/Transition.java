@@ -125,7 +125,7 @@ class Transition implements Serializable {
 	 */
 	public char pick(float position) throws RuntimeException {
 		if (position < 0 || position > 1.0) {
-			throw new IllegalArgumentException("Prob must be between 0 and 1.0");
+			throw new IllegalArgumentException(String.format("Probability %g must be between 0 and 1.0", position));
 		}
 		if(distribution == null) {
 			throw new RuntimeException("A transition was called for sampling before it had been built.");
@@ -141,7 +141,7 @@ class Transition implements Serializable {
 				return entry.getKey();
 			}
 		}
-		logger.error("Unable to find a position for {} in Transition ");
+		logger.error("Unable to find a position for {} in Transition ", position);
 		return SymbolManager.getEndSymbol();
 	}
 

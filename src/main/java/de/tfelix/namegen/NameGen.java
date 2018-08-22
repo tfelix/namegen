@@ -17,11 +17,11 @@ import org.slf4j.LoggerFactory;
  * @author Thomas Felix
  *
  */
-public class NameGen {
+public class NameGen<R extends Random> {
 
 	private final static Logger logger = LoggerFactory.getLogger(NameGen.class);
 
-	private Random random;
+	private R random;
 	private final RuntimeModel generator;
 
 	/**
@@ -46,13 +46,18 @@ public class NameGen {
 		try {
 			generator = objectMapper.readValue(file, RuntimeModel.class);
 		} catch (IOException e) {
-		    logger.error(e.getLocalizedMessage());
-		    throw new IllegalArgumentException("Problematic file %s".format(nameFile));
-        }
-        this.random =  ThreadLocalRandom.current();
+			logger.error(e.getLocalizedMessage());
+			throw new IllegalArgumentException("Problematic file %s".format(nameFile));
+		}
+		this.random =  (R)ThreadLocalRandom.current();
 	}
 
-	public void set_random(Random random) {
+	public NameGen(RuntimeModel generator, R random) {
+	    this.generator = generator;
+	    this.random = random;
+    }
+
+	public void setRandom(R random) {
 	    this.random = random;
     }
 

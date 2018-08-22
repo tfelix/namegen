@@ -3,8 +3,10 @@ package de.tfelix.namegen;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Paths;
+import java.util.Random;
 
 import com.ibm.icu.util.ULocale;
+import de.tfelix.namegen.model.RuntimeModel;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -43,7 +45,19 @@ public class NameGenTest {
 		Assert.assertNotNull(name);
 		Assert.assertTrue(name.length() > 0);
 		logger.info("Successfully generated {}, reminiscent of the names in {}.", name, training_input);
-
-		// todo: mock a pseudorandom generator and assert that the loaded model is the same as the original model
+		Random deterministic = new Random() {
+			@Override
+			public float nextFloat() {
+				return 0.2f;
+			}
+		};
+		gen.setRandom(deterministic);
+		RuntimeModel built = trainer.build();
+		NameGen generator2 = new NameGen(built, deterministic);
+		String name1 = gen.getName();
+		logger.info("The model loaded from the file system produced a name {}", name1);
+		String name2 = generator2.getName();
+		logger.info("The model that stayed in memory produced a name {}", name2);
+		Assert.assertEquals(gen.getName(), generator2.getName());
 	}
 }

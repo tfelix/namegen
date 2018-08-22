@@ -85,6 +85,9 @@ public class MarkovModel implements TrainableModel {
         for (String key : transitions.keySet()) {
             builtTransitions.put(key, transitions.get(key).build());
         }
-        return new RuntimeModel(this.order, this.locale, builtTransitions);
+        Transition transition = new Transition(0f, locale);
+        transition.update(this.postfix);
+        Transition delimiterTransition = transition.build();
+        return new RuntimeModel(this.order, this.locale, builtTransitions, delimiterTransition);
     }
 }

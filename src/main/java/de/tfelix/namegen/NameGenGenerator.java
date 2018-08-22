@@ -108,6 +108,10 @@ public class NameGenGenerator {
 		LOG.info("File {} analyzed in {} ms.", inF.getName(), System.currentTimeMillis() - startTime);
 	}
 
+	RuntimeModel build() {
+	    return this.trainableModel.build();
+    }
+
 	/**
 	 * Writes the trainableModel serialized to a file to load it later.
 	 * 

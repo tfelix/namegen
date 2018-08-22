@@ -8,33 +8,31 @@ import java.util.Map;
 import java.util.Random;
 import java.util.function.Function;
 
-public class RuntimeModel implements Function<Random, String> {
+public class RuntimeModel<R extends Random> implements Function<R, String> {
     /**
      * JSON serialization requires properties to be public :(
      */
     public final int order;
     public String language_code;
     private final String prefix;
-    private final char postfix;
     public final Map<String, Transition> transitions;
-    private final Transition delimiterTransition;
+    public final Transition delimiterTransition;
 
-    public RuntimeModel(int order, ULocale locale, Map<String, Transition> transitions) {
+    public RuntimeModel(int order, ULocale locale, Map<String, Transition> transitions,
+                        Transition delimiterTransition) {
         this.language_code = locale.toString();
         this.order = order;
         this.transitions = transitions;
         this.prefix = SymbolManager.getStartSymbol(order);
-        this.postfix = SymbolManager.getEndSymbol();
-        Transition transition = new Transition(0f, locale);
-        transition.update(this.postfix);
-        this.delimiterTransition = transition.build();
+        this.delimiterTransition = delimiterTransition;
     }
 
     @JsonCreator
     public RuntimeModel(@JsonProperty("order") int order,
                         @JsonProperty("language_code") String language_code,
-                        @JsonProperty("transitions") Map<String, Transition> transitions) {
-        this(order, new ULocale(language_code), transitions);
+                        @JsonProperty("transitions") Map<String, Transition> transitions,
+                        @JsonProperty("delimiterTransition") Transition delimiterTransition) {
+        this(order, new ULocale(language_code), transitions, delimiterTransition);
     }
 
     /**
@@ -96,7 +94,7 @@ public class RuntimeModel implements Function<Random, String> {
      * @return A generated name from the model.
      * @throws RuntimeException if the model hasn't yet been built
      */
-    public String apply(Random rand) throws RuntimeException {
+    public String apply(R rand) throws RuntimeException {
         StringBuilder sequence = new StringBuilder();
         sequence.append(prefix);
 
