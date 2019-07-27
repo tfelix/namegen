@@ -40,8 +40,8 @@ public class NameGenCli {
 		try {
 			final CommandLineParser cmdParser = new DefaultParser();
 			final CommandLine line = cmdParser.parse(options, args);
-			final String outFile = line.getOptionValue("o");
-			final String inFile = line.getOptionValue("i");
+			final String outputFile = line.getOptionValue("o");
+			final String inputFile = line.getOptionValue("i");
 			final String mode = line.getOptionValue(MODE_ARG, "build");
 			final String locale = line.getOptionValue(LOCALE_ARG, Locale.ENGLISH.getLanguage());
 			final ULocale icuLocale = new ULocale(locale);
@@ -57,11 +57,11 @@ public class NameGenCli {
 				UnicodeSet alphabet = LocaleData.getExemplarSet(icuLocale, LocaleData.ES_STANDARD);
 				float prior = 1f/(30f*alphabet.size());  // ~1/30 chance that generated letters will be unseen
 				final NameGenGenerator gen = new NameGenGenerator(order, prior, 0.02f, icuLocale);
-				gen.analyze(inFile);
-				gen.writeModel(outFile);
+				gen.analyze(inputFile);
+				gen.writeModel(outputFile);
 				LOG.info("Trainable model was written.");
 			} else if (mode.equalsIgnoreCase("generate")) {
-				final NameGen gen = new NameGen(inFile);
+				final NameGen gen = new NameGen(inputFile);
 				Set<String> generatedNames = new HashSet<>(count);
 				for(int i = 0; i < count; ++i) {
 					String randomName = gen.getName();
@@ -87,8 +87,8 @@ public class NameGenCli {
 		final Options opts = new Options();
 
 		Option opt = Option.builder("o")
-				.argName("outFile")
-				.longOpt("out")
+				.argName("outputFile")
+				.longOpt("output")
 				.hasArg()
 				.required(false)
 				.desc("Gives the path of the output file.")
@@ -97,8 +97,8 @@ public class NameGenCli {
 		opts.addOption(opt);
 
 		opt = Option.builder("i")
-				.argName("inFile")
-				.longOpt("in")
+				.argName("inputFile")
+				.longOpt("input")
 				.hasArg()
 				.required()
 				.desc("Gives the path to the input file of the names to be learned.")

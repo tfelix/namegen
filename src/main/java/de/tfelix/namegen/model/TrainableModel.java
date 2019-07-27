@@ -1,7 +1,6 @@
 package de.tfelix.namegen.model;
 
 import java.io.Serializable;
-import java.util.Random;
 
 /**
  * A model containing the descriptive information in order to create new names
@@ -24,7 +23,7 @@ public interface TrainableModel extends Serializable {
     /**
      * Returns a modified TrainableModel instance that has been optimized for runtime rather than training. This should be called
      * before any subsequent calls to generate().
-     * @return
+     * @return A Learner instance
      */
 	RuntimeModel build();
 

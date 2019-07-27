@@ -5,10 +5,11 @@
 	<version>1.0.1</version>
 	<packaging>jar</packaging>
 	<name>namegen</name>
-	<description>A simple namegenerator based on some kind of bayes network probability distribution.</description>
+	<description>A simple name generator based on some kind of Bayesian network probability distribution.</description>
 
 	<properties>
 		<jdk.version>1.7</jdk.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
 	<scm>
