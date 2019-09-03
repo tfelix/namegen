@@ -4,3 +4,8 @@
 /target/
 dependency-reduced-pom.xml
 pom.xml.releaseBackup
+.idea/
+*.iml
+*.txt
+*.dat
+*.csv

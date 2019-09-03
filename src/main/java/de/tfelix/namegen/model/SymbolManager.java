@@ -9,7 +9,8 @@ package de.tfelix.namegen.model;
  */
 final class SymbolManager {
 
-	private final static Character DELIMITER = '#';
+    // We need a delimiter that will not be seen in our training data or our chosen alphabet
+	private final static Character DELIMITER = '✎';
 
 	/**
 	 * Start symbol of the tokens of the given order.

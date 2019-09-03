@@ -1,7 +1,6 @@
 package de.tfelix.namegen.model;
 
 import java.io.Serializable;
-import java.util.Random;
 
 /**
  * A model containing the descriptive information in order to create new names
@@ -10,7 +9,7 @@ import java.util.Random;
  * @author Thomas Felix
  *
  */
-public interface Model extends Serializable {
+public interface TrainableModel extends Serializable {
 
 	/**
 	 * Updates the model with new information which is contained in the given
@@ -21,13 +20,11 @@ public interface Model extends Serializable {
 	 */
 	void update(String line);
 
-	/**
-	 * Generate a random name from the model which was previously generated.
-	 * 
-	 * @param rand
-	 *            A instance of a random number generator.
-	 * @return A generated name from the model.
-	 */
-	String generate(Random rand);
+    /**
+     * Returns a modified TrainableModel instance that has been optimized for runtime rather than training. This should be called
+     * before any subsequent calls to generate().
+     * @return A Learner instance
+     */
+	RuntimeModel build();
 
 }
