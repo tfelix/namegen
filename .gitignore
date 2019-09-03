@@ -9,3 +9,4 @@ pom.xml.releaseBackup
 *.txt
 *.dat
 *.csv
+release.properties
