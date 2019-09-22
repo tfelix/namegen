@@ -12,6 +12,7 @@ import org.apache.commons.cli.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.text.NumberFormat;
 import java.util.HashSet;
 import java.util.Locale;
@@ -58,7 +59,13 @@ public class NameGenCli {
 				float prior = 1f/(30f*alphabet.size());  // ~1/30 chance that generated letters will be unseen
 				final NameGenGenerator gen = new NameGenGenerator(order, prior, 0.02f, icuLocale);
 				gen.analyze(inputFile);
-				gen.writeModel(outputFile);
+				try {
+					gen.writeModel(outputFile);
+				} catch(IOException e) {
+					LOG.error("Could not write output file.", e);
+					System.exit(1);
+				}
+
 				LOG.info("Trainable model was written.");
 			} else if (mode.equalsIgnoreCase("generate")) {
 				final NameGen gen = new NameGen(inputFile);

@@ -18,8 +18,12 @@ public class RuntimeModel<R extends Random> implements Function<R, String> {
     public final Map<String, Transition> transitions;
     public final Transition delimiterTransition;
 
-    public RuntimeModel(int order, ULocale locale, Map<String, Transition> transitions,
-                        Transition delimiterTransition) {
+    public RuntimeModel(
+            int order,
+            ULocale locale,
+            Map<String, Transition> transitions,
+            Transition delimiterTransition
+    ) {
         this.language_code = locale.toString();
         this.order = order;
         this.transitions = transitions;
@@ -39,8 +43,7 @@ public class RuntimeModel<R extends Random> implements Function<R, String> {
      * The leading text is transformed so it is usable. It gets appended or
      * shortened so that a categorical exists.
      *
-     * @param context
-     *            The context string.
+     * @param context The context string.
      * @return A prepared context string.
      */
     private String backoff(String context) {
@@ -74,10 +77,8 @@ public class RuntimeModel<R extends Random> implements Function<R, String> {
      * Generates a new random char from the model depending on the prior context
      * and the random number.
      *
-     * @param context
-     *            The leading text.
-     * @param rand
-     *            Random number between 0 and 1.
+     * @param context The leading text.
+     * @param rand    Random number between 0 and 1.
      * @return A new char.
      */
     private char sample(String context, float rand) throws RuntimeException {
@@ -89,8 +90,7 @@ public class RuntimeModel<R extends Random> implements Function<R, String> {
     /**
      * Generate a random name from the model which was previously generated.
      *
-     * @param rand
-     *            A instance of a random number generator.
+     * @param rand A instance of a random number generator.
      * @return A generated name from the model.
      * @throws RuntimeException if the model hasn't yet been built
      */

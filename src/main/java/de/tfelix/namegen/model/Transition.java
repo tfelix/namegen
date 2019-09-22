@@ -52,8 +52,12 @@ class Transition implements Serializable {
 		this.observedChars = new HashMap<>();
 	}
 
+	public Map<Character, Float> getDistribution() {
+		return distribution;
+	}
+
 	@JsonCreator
-	public Transition(@JsonProperty("distribution")Map<Character, Float> distribution) {
+	public Transition(@JsonProperty("distribution") Map<Character, Float> distribution) {
 		// todo: separate interface for runtime transition
 		this.distribution = distribution;
 		this.locale = null;
@@ -82,7 +86,7 @@ class Transition implements Serializable {
 	public Transition build() {
 		Transition runtimeTransition = new Transition(this.priorProbability, this.locale);
 		// Having a tree allows deterministic traversal
-		runtimeTransition.distribution = new TreeMap<Character, Float>();
+		runtimeTransition.distribution = new TreeMap<>();
 		float observationRange = 1.0f;
 		if(priorProbability >= Math.ulp(1.0)) {
 			// Prior is desired; initialise the alphabet.

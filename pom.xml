@@ -27,38 +27,7 @@
 		</license>
 	</licenses>
 
-	<distributionManagement>
-		<repository>
-			<id>bintray-tfelix-namegen</id>
-			<name>tfelix-namegen</name>
-			<url>https://api.bintray.com/maven/tfelix/namegen/namegen/;publish=1</url>
-		</repository>
-	</distributionManagement>
-
 	<profiles>
-		<profile>
-			<id>bintray</id>
-			<repositories>
-				<repository>
-					<snapshots>
-						<enabled>false</enabled>
-					</snapshots>
-					<id>bintray-tfelix-namegen</id>
-					<name>bintray</name>
-					<url>http://dl.bintray.com/tfelix/namegen</url>
-				</repository>
-			</repositories>
-			<pluginRepositories>
-				<pluginRepository>
-					<snapshots>
-						<enabled>false</enabled>
-					</snapshots>
-					<id>bintray-tfelix-namegen</id>
-					<name>bintray-plugins</name>
-					<url>http://dl.bintray.com/tfelix/namegen</url>
-				</pluginRepository>
-			</pluginRepositories>
-		</profile>
 		<profile>
 			<id>shaded</id>
 			<build>
@@ -129,6 +98,31 @@
 						<goals>
 							<goal>jar</goal>
 						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>3.1.0</version>
+				<inherited>false</inherited>
+				<executions>
+					<execution>
+						<id>copy-resources-bintray</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${basedir}/target</outputDirectory>
+							<resources>
+								<resource>
+									<directory>${basedir}</directory>
+									<include>bintray.json</include>
+									<filtering>true</filtering>
+								</resource>
+							</resources>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>

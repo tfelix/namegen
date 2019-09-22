@@ -34,7 +34,7 @@ public class NameGenGeneratorTest {
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void analyze_writeNullFile_throws() throws URISyntaxException {
+	public void analyze_writeNullFile_throws() throws Exception {
 		
 		URL url = getClass().getClassLoader().getResource("morrow_names.txt");
 		File f = Paths.get(url.toURI()).toFile();

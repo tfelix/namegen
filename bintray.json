@@ -1,20 +1,26 @@
 {
   "package": {
-    "name": "namegen",
+    "name": "${project.name}",
     "repo": "namegen",
-    "subject": "tfelix"
+    "subject": "tfelix",
+	"website_url": "${project.url}",
+    "issue_tracker_url": "${project.url}/issues",
+	"vcs_url": "${project.url}",
+    "licenses": ["MIT"],
+	"public_download_numbers": true,
+    "public_stats": true
   },
 
   "version": {
-    "name": "1.0.2",
-    "released": "2019-09-22",
+    "name": "${project.version}",
+    "released": "${maven.build.timestamp}",
+	"vcs_tag": "${project.version}",
     "gpgSign": false
   },
-
   "files":
   [
-    {"includePattern": "build/bin(.*)*/(.*\\.gem)", "excludePattern": ".*/do-not-deploy/.*", "uploadPattern": "gems/$2"},
-    {"includePattern": "build/docs/(.*)", "uploadPattern": "docs/$1"}
+    {"includePattern": "pom.xml", "uploadPattern": "de/tfelix/namegen/${project.version}/namegen-${project.version}.pom"},
+    {"includePattern": "target/(.*\.jar)", "uploadPattern": "de/tfelix/namegen/${project.version}/$1"}
   ],
   "publish": true
 }

@@ -1,8 +1,8 @@
 package de.tfelix.namegen;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.file.Paths;
 import java.util.Random;
 
 import com.ibm.icu.util.ULocale;
@@ -11,7 +11,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 
 public class NameGenTest {
 
@@ -26,21 +25,20 @@ public class NameGenTest {
 	@Test(expected = IllegalArgumentException.class)
 	public void analyze_filesDoesNotExist_throws() {
 		
-		new NameGen("C:\bla\blubber\1235358xhsg.dat");
+		new NameGen("C:\\bla\\blubber\\1235358xhsg.dat");
 	}
 
 	@Test
-	public void getName_ok() throws URISyntaxException {
+	public void getName_ok() throws URISyntaxException, IOException {
 		NameGenGenerator trainer = new NameGenGenerator(3, 0f, 0.02f, ULocale.ENGLISH);
-		String training_input = "morrow_names.txt";
-		URL morrowNames = getClass().getClassLoader().getResource(training_input);
-		trainer.analyze(morrowNames.getFile());
-		String trainedData = "test_model.dat";
-		URL url = getClass().getClassLoader().getResource(trainedData);
-		String modelFile = Paths.get(url.toURI()).toString();
-		trainer.writeModel(modelFile);
+		String training_input = "./morrow_names.txt";
+		File morrowNames = new File(getClass().getClassLoader().getResource(training_input).getFile());
+		trainer.analyze(morrowNames.getAbsolutePath());
+
+		File output = File.createTempFile("test_model", ".dat");
+		trainer.writeModel(output.getAbsolutePath());
 		
-		NameGen gen = new NameGen(trainedData);
+		NameGen gen = new NameGen(output.getAbsolutePath());
 		String name = gen.getName();
 		Assert.assertNotNull(name);
 		Assert.assertTrue(name.length() > 0);
