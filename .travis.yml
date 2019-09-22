@@ -1,0 +1,12 @@
+---
+language: java
+sudo: false
+
+deploy:
+  provider: bintray
+  file: "bintray.json"
+  user: tfelix
+  key: $BINTRAY_API_KEY
+  skip_cleanup: true
+  on:
+    tags: true

@@ -1,0 +1,20 @@
+{
+  "package": {
+    "name": "namegen",
+    "repo": "namegen",
+    "subject": "tfelix"
+  },
+
+  "version": {
+    "name": "1.0.2",
+    "released": "2019-09-22",
+    "gpgSign": false
+  },
+
+  "files":
+  [
+    {"includePattern": "build/bin(.*)*/(.*\\.gem)", "excludePattern": ".*/do-not-deploy/.*", "uploadPattern": "gems/$2"},
+    {"includePattern": "build/docs/(.*)", "uploadPattern": "docs/$1"}
+  ],
+  "publish": true
+}
